@@ -63,3 +63,36 @@ Interrupt
         ;;  the interrupt was caused by Timer0
         btfsc   ON_OFF,0        ; if the LED is off don't goto Turn_Off, goto Turn_On instead
         goto    Turn_Off        ; then jump to LED off
+
+Turn_On
+        bsf     ON_OFF,0        ; otherwise record that we're turning the LED on and
+
+        ;; turn the LED on
+        movlw   B'00001111'     ; move predefined value to TRISIO
+        movwf   TRISIO
+        bcf     STATUS, RP0     ; Bank 0
+        movlw   B'00010000'     ; move predefined value to GPIO
+        movwf   GPIO
+
+        ;; subtract the analog value from 255 (0xFF) and store into Timer0
+        movf    BRIGHT,w        ; load brightness value into W
+        sublw   D'255'          ; subtract it from 255
+	incf    BRIGHT,f
+        movwf   TMR0            ; and store in Timer0
+
+        retfie                  ; return from the interrupt
+
+Turn_Off
+        bcf     ON_OFF,0        ; record that we're turning the LED off and
+
+        ;; turn the LED off
+        bcf     STATUS, RP0     ; Bank 0
+        clrf    GPIO
+
+        ;; Store the analog value into Timer0
+        movf    BRIGHT,w        ; load analog value into W
+        movwf   TMR0            ; and store in Timer0
+
+        retfie                  ; return from the interrupt
+
+        end
