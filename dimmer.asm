@@ -43,3 +43,16 @@ Program_Start
 
 
 Main_Loop
+        clrwdt                  ; clear Watch Dog Timer
+
+        bcf     STATUS,RP0      ; Bank 0
+        btfss   ADCON0,1        ; if it's not converting
+        bsf     ADCON0,1        ; then tell it to start
+
+
+
+
+        goto    Main_Loop       ; repeat these instructions forever (but interrupts happen)
+
+
+Interrupt
