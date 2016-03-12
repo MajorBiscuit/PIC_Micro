@@ -23,3 +23,23 @@ Program_Start
 
         bsf     STATUS,RP0      ; Bank 1
 	call    0x3ff           ; update factory calibrated oscillator: get the calibration value
+        movwf   OSCCAL          ; update factory calibrated oscillator: store it in OSCCAL
+
+        movlw   B'00111111'     ; Set all I/O pins as inputs
+        movwf   TRISIO
+
+        movlw   B'00000001'     ; only use AD0
+        movwf   ANSEL
+
+        movlw   B'10000010'     ; Weak pullups: disabled
+        movwf   OPTION_REG      ; TMR0 prescaler: 1:8
+
+        bsf     INTCON, GIE     ; General interrup enable
+        bsf     INTCON, T0IE    ; enable Timer0 interrupt
+
+        bcf     STATUS,RP0      ; Bank 0
+        bsf     ADCON0, ADON    ; Turn the AD converter ON
+        clrf    GPIO            ; clear all outputs
+
+
+Main_Loop
