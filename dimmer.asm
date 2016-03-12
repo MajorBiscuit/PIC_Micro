@@ -56,3 +56,10 @@ Main_Loop
 
 
 Interrupt
+        ;; sort out the interrupt flags
+        bsf     STATUS, RP0     ; Bank 1
+        bcf     INTCON, T0IF    ; Clear the Timer0 interrupt flag
+
+        ;;  the interrupt was caused by Timer0
+        btfsc   ON_OFF,0        ; if the LED is off don't goto Turn_Off, goto Turn_On instead
+        goto    Turn_Off        ; then jump to LED off
